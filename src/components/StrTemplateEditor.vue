@@ -34,7 +34,8 @@ export default {
   mounted(){
     let pageEditor = monaco.editor.create(this.$refs.monaco, {
       value: "function hello() {\n\talert('Hello world!');\n}",
-      language: "javascript"
+      language: "javascript",
+      automaticLayout: true,
     });
   }
 }
@@ -43,6 +44,10 @@ export default {
 <style scoped>
 .monaco{
   border: 1px solid black;
-  height: 400px;
+  height: 100%;
+}
+.container{
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 </style>
