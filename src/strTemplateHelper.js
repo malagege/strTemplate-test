@@ -4,6 +4,9 @@ function parseYaml(str){
     return jsYaml.load(str)
 }
 
+function dumpYaml(obj){
+    return jsYaml.dump(obj)
+}
 
 function strTemplate(str, data){
     console.log('hello',Object.keys(data))
@@ -21,5 +24,6 @@ function strTemplate(str, data){
 
 export {
     parseYaml,
-    strTemplate
+    strTemplate,
+    dumpYaml
 }

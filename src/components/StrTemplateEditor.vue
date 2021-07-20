@@ -36,9 +36,6 @@
           </div>
       </div>
     </div>
-    <span v-show="false">
-    {{result}}
-    </span>
   </div>
 </template>
 
@@ -49,8 +46,10 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-import {parseYaml, strTemplate as testTemplate} from '../strTemplateHelper.js'
+import {parseYaml, strTemplate as testTemplate, dumpYaml} from '../strTemplateHelper.js'
 
+let  pageEditor = null
+let  pageEditor2 = null
 let  pageEditor3 = null
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -75,13 +74,18 @@ export default {
       dataPointer: 0,
       uData: parseYaml("data: \n  - test1: test \n    test2: test2 \n  - test1: test \n    test2: test2 "),
       error: false,
-      templateText: 'Hello World {{ test1 }}',
+      templateText: '',
       mode: 'edit',
     }
   },
   mounted(){
-    let pageEditor = monaco.editor.create(this.$refs.monaco, {
-      value: "data: \n  - test1: test \n    test2: test2 \n  - test1: test \n    test2: test2 ",
+    // 處理 url hash
+    let { uData,templateText } = this.readHashUrl()
+    console.log('{ uData,templateText }',{ uData,templateText })
+    this.uData = uData
+    this.templateText = templateText
+    pageEditor = monaco.editor.create(this.$refs.monaco, {
+      value: dumpYaml(uData),
       language: "yaml",
       automaticLayout: true,
     });
@@ -100,12 +104,12 @@ export default {
       } catch (error) {
         this.error = true
       }
-
+      this.result
       // console.log('uData',this.uData.data[this.dataPointer].test1)
       // console.log(strTemplate('Hello World: {{test1}}', this.uData.data[this.dataPointer]))
     })
-    let pageEditor2 = monaco.editor.create(this.$refs.monaco2, {
-      value: this.templateText,
+    pageEditor2 = monaco.editor.create(this.$refs.monaco2, {
+      value: templateText,
       language: "yaml",
       automaticLayout: true,
     })
@@ -113,13 +117,15 @@ export default {
       console.log('pageEditor2 onDidChangeModelContent')
       let templateText = pageEditor2.getValue()
       this.templateText = templateText
+      this.result
     })
     pageEditor3 = monaco.editor.create(this.$refs.monaco3, {
       value: this.result,
       language: "yaml",
       automaticLayout: true,
       readOnly: true
-    });
+    })
+    this.result
   },
   computed:{
     result(){
@@ -134,6 +140,7 @@ export default {
       if (pageEditor3){
         pageEditor3.setValue(result)
       }
+      this.urlChgData();
       return  result
     },
     isShowControl(){
@@ -150,8 +157,45 @@ export default {
       if( this.dataPointer > 0 ){
         this.dataPointer--
       }
-    }
+    },
+    urlChgData(){
+      let uData = this.uData
+      let templateText = this.templateText
+      let urlData = {
+        uData,
+        templateText
+      }
+      console.log('urlChgData urlData', urlData)
+      if (this.templateText == ''){
+        return false
+      }
+      // https://stackoverflow.com/questions/53102700/how-do-i-turn-an-es6-proxy-back-into-a-plain-object-pojo
+      urlData = JSON.parse(JSON.stringify(urlData)) 
+      console.log('urlData',urlData)
+      let hash = btoa(JSON.stringify(urlData))
+      console.log('url hash:' + hash)
+      window.history.replaceState({hash},null,`#${hash}`)
+    },
+    readHashUrl(){
+      let hash = window.location.hash
+      if( hash ){
+        let data = JSON.parse(atob(hash.substr(1)))
+        console.log('data',data)
+        let uData = data.uData
+        let templateText = data.templateText
+        return {uData,templateText}
+        // this.uData = data.uData
+        // pageEditor.setValue(dumpYaml(this.uData))
+        // this.templateText = data.templateText
+        // pageEditor2.setValue(this.templateText)
+        // this.result
+      }
+      return {
+        uData: this.uData,
+        templateText: 'Hello World {{ test1 }}'
+      }
 
+    }
   }
 }
 </script>
