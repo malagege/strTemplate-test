@@ -47,6 +47,7 @@ import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import {parseYaml, strTemplate as testTemplate, dumpYaml} from '../strTemplateHelper.js'
+import {Base64} from 'js-base64'
 
 let  pageEditor = null
 let  pageEditor2 = null
@@ -152,11 +153,13 @@ export default {
       if( this.dataPointer < this.uData.data.length - 1 ){
         this.dataPointer++
       }
+      this.result
     },
     subtractDataPointer(){
       if( this.dataPointer > 0 ){
         this.dataPointer--
       }
+      this.result
     },
     urlChgData(){
       let uData = this.uData
@@ -172,14 +175,18 @@ export default {
       // https://stackoverflow.com/questions/53102700/how-do-i-turn-an-es6-proxy-back-into-a-plain-object-pojo
       urlData = JSON.parse(JSON.stringify(urlData)) 
       console.log('urlData',urlData)
-      let hash = btoa(JSON.stringify(urlData))
+      let hash = Base64.encode(JSON.stringify(urlData))   
+      //[JavaScript atob / btoa 編解碼不支援 utf8 的解決方案 - iT 邦幫忙::一起幫忙解決難題，拯救 IT 人的一天](https://ithelp.ithome.com.tw/articles/10229587)
+      //https://blog.coding.net/blog/resolve-atob-decode-chinese-character-outputting-messy-code-problem-in-javascript
+      //https://nelluil.postach.io/post/btoa-atob-zhi-yuan-zhong-wen-de-fang-fa
+      //[原来浏览器原生支持JS Base64编码解码 « 张鑫旭-鑫空间-鑫生活](https://www.zhangxinxu.com/wordpress/2018/08/js-base64-atob-btoa-encode-decode/)
       console.log('url hash:' + hash)
       window.history.replaceState({hash},null,`#${hash}`)
     },
     readHashUrl(){
       let hash = window.location.hash
       if( hash ){
-        let data = JSON.parse(atob(hash.substr(1)))
+        let data = JSON.parse(Base64.decode(hash.substr(1)))
         console.log('data',data)
         let uData = data.uData
         let templateText = data.templateText
