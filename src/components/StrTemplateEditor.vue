@@ -34,6 +34,9 @@
               <div class="monaco" ref="monaco3"></div>
             </div>
           </div>
+          <div class="row">
+            <div class="btn col-12 btn-success" @click="copyText">複製</div>
+          </div>
       </div>
     </div>
   </div>
@@ -126,6 +129,11 @@ export default {
       automaticLayout: true,
       readOnly: true
     })
+
+    pageEditor3.onMouseDown(e => {
+      const range = pageEditor3.getModel().getFullModelRange();
+      pageEditor3.setSelection(range);
+    })
     this.result
   },
   computed:{
@@ -149,6 +157,14 @@ export default {
     }
   },
   methods:{
+    copyText(){
+      var text = pageEditor3.getValue()
+      navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!')
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err)
+      });
+    },
     addDataPointer(){
       if( this.dataPointer < this.uData.data.length - 1 ){
         this.dataPointer++
