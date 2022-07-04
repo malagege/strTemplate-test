@@ -5,7 +5,8 @@ import mkcert from 'vite-plugin-mkcert'
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    https: false
+    https: true,
+    port: 5000
   },
   plugins: [vue(),mkcert(),]
 })
