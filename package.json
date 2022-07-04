@@ -9,6 +9,7 @@
   "dependencies": {
     "js-base64": "^3.6.1",
     "monaco-editor": "^0.25.2",
+    "template7": "^1.4.2",
     "vue": "^3.0.5"
   },
   "devDependencies": {
