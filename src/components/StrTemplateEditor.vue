@@ -15,7 +15,10 @@
                   <a class="nav-link" :class="{active: mode === 'edit'}" aria-current="page" href="javascript:;" @click="mode = 'edit'">編輯</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" :class="{active: mode === 'result'}" href="javascript:;" @click="mode = 'result'">結果</a>
+                  <a class="nav-link" :class="{active: mode === 'result'}" href="javascript:;" @click="mode = 'result';result">結果</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" :class="{active: mode === 'result2'}" href="javascript:;" @click="mode = 'result2';result">總和</a>
                 </li>
               </ul>
             </div>
@@ -30,7 +33,7 @@
             <div class="col-12" v-show="mode === 'edit'">
               <div class="monaco" ref="monaco2"></div>
             </div>
-            <div class="col-12" v-show="mode === 'result'">
+            <div class="col-12" v-show="mode === 'result' || mode === 'result2'">
               <div class="monaco" ref="monaco3"></div>
             </div>
           </div>
@@ -115,7 +118,7 @@ export default {
     })
     pageEditor2 = monaco.editor.create(this.$refs.monaco2, {
       value: templateText,
-      language: "yaml",
+      language: "twig",
       automaticLayout: true,
     })
     pageEditor2.onDidChangeModelContent( e =>{
@@ -126,7 +129,7 @@ export default {
     })
     pageEditor3 = monaco.editor.create(this.$refs.monaco3, {
       value: this.result,
-      language: "yaml",
+      language: "twig",
       automaticLayout: true,
       readOnly: true
     })
@@ -141,19 +144,35 @@ export default {
     result(){
       console.log('this.uData.data',this.uData.data)
       console.log('this.templateText', this.templateText)
-      if(!!!this.uData.data[this.dataPointer]){
-        this.dataPointer = 0
+      console.log(this.mode)
+      if( this.mode === 'result'){
+        if(!!!this.uData.data[this.dataPointer]){
+          this.dataPointer = 0
+        }
+        console.log('uData',this.uData.data[this.dataPointer].test1)
+        let result =  testTemplate(this.templateText, this.uData.data[this.dataPointer])
+        console.log('result',result)
+        if (pageEditor3){
+          pageEditor3.setValue(result)
+        }
+        this.urlChgData()
+        return  result
+      }else if( this.mode === 'result2'){
+        let result = ''
+        let strMap = this.uData.data.map(element => {
+          return testTemplate(this.templateText, element)
+        });
+        
+        console.log('result2',strMap)
+        if (pageEditor3){
+          pageEditor3.setValue(strMap.join('\n'))
+        }
+        this.urlChgData();
+        return  result
       }
-      console.log('uData',this.uData.data[this.dataPointer].test1)
-      let result =  testTemplate(this.templateText, this.uData.data[this.dataPointer])
-      console.log('result',result)
-      if (pageEditor3){
-        pageEditor3.setValue(result)
-      }
-      this.urlChgData();
-      return  result
     },
     isShowControl(){
+      if(this.mode === 'edit' || this.mode === 'result2')  return false;
       return this.uData.data.length > 1;
     }
   },
