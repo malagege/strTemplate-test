@@ -18,6 +18,22 @@ template7.registerHelper('camel', function (text, options){
     return firstChar + text.substr(1);
 });
 
+template7.registerHelper('regex_match', function (regex_str,text, index  ,options){
+    if(!!!text){
+        return ''
+    }
+    const regex = new RegExp(regex_str, 'gm')///varchar\((\d+)\)/gm;
+    
+    let m = regex.exec(text);
+    console.log('debug',regex,text,m)
+    console.log(m)
+    if (m){
+
+        return m[index] ?? ''
+    }
+    return ''
+    
+});
 
 function parseYaml(str){
     return jsYaml.load(str)
