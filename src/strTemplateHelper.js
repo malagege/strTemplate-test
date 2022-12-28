@@ -44,6 +44,7 @@ function dumpYaml(obj){
 }
 
 function strTemplate(str, data){
+    str = str.replace(/\\/g, '\\\\')     // 排除反斜線跳脫字元
     var compiledTemplate = template7.compile(str)
     var templateStr = compiledTemplate(data);
     return templateStr
