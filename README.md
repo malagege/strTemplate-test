@@ -55,9 +55,9 @@ src/
 
 ## 部署
 
-推送到 `master` 分支後，GitHub Actions（[.github/workflows/deploy.yml](.github/workflows/deploy.yml)）會自動執行測試、build，並部署到 GitHub Pages。
+推送到 `master` 分支後，GitHub Actions（[.github/workflows/deploy.yml](.github/workflows/deploy.yml)）會自動執行測試、build，並把 `dist/` 推送到 `gh-pages` 分支發佈到 GitHub Pages。
 
-workflow 會在第一次執行時自動啟用 GitHub Pages（`configure-pages` 的 `enablement: true`）。若自動啟用失敗，再到 repo 的 **Settings → Pages → Build and deployment → Source** 手動選擇 **GitHub Actions**。
+第一次部署後 GitHub 通常會自動啟用 Pages；若未生效，到 repo 的 **Settings → Pages → Build and deployment** 確認 Source 為 **Deploy from a branch**、分支為 `gh-pages`。
 
 ## 版本說明（重構相容性變更）
 
