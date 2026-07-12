@@ -1,44 +1,39 @@
 <template>
   <div class="wrap">
-    <Header @openUseHelperEvent="setOpenUseHelperTrue"></Header>
-    <StrTemplate></StrTemplate>
-    <Footer></Footer>
-    <UseHelper :open="open" @read="setOpenUseHelperFalse"></UseHelper>
+    <AppHeader @open-use-helper="openTutorial" />
+    <StrTemplateEditor />
+    <AppFooter />
+    <UseHelper :open="tutorialOpen" @read="closeTutorial" />
   </div>
-
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
-import Header from './components/Header.vue'
-import Footer from './components/Footer.vue'
-import StrTemplate from './components/StrTemplateEditor.vue'
+import AppHeader from './components/Header.vue'
+import AppFooter from './components/Footer.vue'
+import StrTemplateEditor from './components/StrTemplateEditor.vue'
 import UseHelper from './components/UseHelper.vue'
+import { createTutorialStorage } from './adapters/tutorial-storage.js'
 
-let myStorage = window.localStorage;
-let openUseHelper = !!!myStorage.getItem('openUseHelper') 
-console.log('openUseHelper',openUseHelper)
-let open = ref(openUseHelper)
+const tutorialStorage = createTutorialStorage()
 
-function setOpenUseHelperFalse(){
-  myStorage.setItem('openUseHelper', false);
-  open.value = false
+// 第一次造訪自動顯示教學；已讀後不再自動顯示（spec FR-08）
+const tutorialOpen = ref(!tutorialStorage.isSeen())
+
+function closeTutorial() {
+  tutorialStorage.markSeen()
+  tutorialOpen.value = false
 }
 
-function setOpenUseHelperTrue(){
-   open.value = true
+function openTutorial() {
+  tutorialOpen.value = true
 }
-
-
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/script-setup-2/active-rfcs/0000-script-setup.md
 </script>
 
 <style scoped>
-.wrap{
+.wrap {
   height: 100vh;
   display: grid;
-  grid-template-rows: min-content auto 100px;
+  grid-template-rows: min-content minmax(0, 1fr) min-content;
 }
 </style>

@@ -1,28 +1,21 @@
 <template>
-  <nav class="navbar navbar-light bg-light">
-  <div class="container justify-content-start">
-    <a class="navbar-brand" href="#">
-      <img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
-      strTemplate
-    </a>
-    <div id="navbarSupportedContent">
-    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-      <li class="nav-item">
-        <button class="btn" @click="$emit('openUseHelperEvent')">使用教學</button>
-      </li>
-    </ul>
+  <nav class="navbar bg-light">
+    <div class="container justify-content-start">
+      <span class="navbar-brand">
+        <img :src="logoUrl" alt="" width="30" height="30" class="d-inline-block align-text-top" />
+        strTemplate
+      </span>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <button type="button" class="btn btn-outline-secondary" @click="$emit('open-use-helper')">使用教學</button>
+        </li>
+      </ul>
     </div>
-  </div>
-
-</nav>
+  </nav>
 </template>
 
-<script>
-export default {
+<script setup>
+import logoUrl from '../assets/logo.png'
 
-}
+defineEmits(['open-use-helper'])
 </script>
-
-<style>
-
-</style>
